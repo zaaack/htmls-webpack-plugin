@@ -6,7 +6,7 @@ Simple, flexible and fast html webpack plugin.
 
 - Simple and flexisble, you can almost controll anything of generate htmls, no need of setup lots of plugins.
 - Support multiple htmls by default
-- Fast, almost 20x faster then html-webpack-plugin for multiple pages.
+- Fast, almost 20x faster then html-webpack-plugin for 20+ pages.
 
 ## Install
 
@@ -53,7 +53,7 @@ interface Params {
 
 ## Why not html-webpack-plugin
 
-html-webpack-plugin is really hard to extends and slow for multiple htmls, to much complete features that I don't need. That's why I create this.
+html-webpack-plugin is really hard to extends and slow for multiple htmls, too much complete features that I don't need. That's why I create this.
 
 ## License
 

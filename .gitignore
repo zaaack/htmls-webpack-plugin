@@ -59,4 +59,4 @@ typings/
 
 lib
 /.cache
-/dist*
+dist*
