@@ -1,6 +1,6 @@
 {
   "name": "htmls-webpack-plugin",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A simple, fast, flexible and multiple html webpack plugin.",
   "main": "lib/index.js",
   "repository": "https://github.com/zaaack/htmls-webpack-plugin",
