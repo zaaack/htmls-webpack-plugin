@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A simple, fast, flexible and multiple html webpack plugin.",
   "main": "lib/index.js",
+  "types": "lib/index",
   "repository": "https://github.com/zaaack/htmls-webpack-plugin",
   "author": "zaaack",
   "license": "MIT",
