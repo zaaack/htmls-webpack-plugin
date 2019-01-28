@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <% for (var css of csses) { %>
+        <link href="<%= css %>" rel="stylesheet">
+    <% } %>
+</head>
+<body>
+    <% for (var js of jses) { %>
+        <script src="<%= js %>"></script>
+    <% } %>
+</body>
+</html>
