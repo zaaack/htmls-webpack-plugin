@@ -20,7 +20,7 @@ export interface Params {
   compilation: Compilation
 }
 
-export type Render = (src: string, params: Params) => string
+export type Render = (src: string, params: Params) => string | Promise<string>
 
 export interface HtmlInfo {
   src: string
@@ -34,9 +34,8 @@ export interface Props {
   flushOnDev?: boolean
   publicPath?: string | ((name: string) => string)
 }
-export default class MultiHtmlPlugin {
+export default class HtmlsPlugin {
   constructor(public props: Props) {
-
   }
   apply(compiler) {
     let outputPath = (compiler as webpack.Compiler).options.output!.path || process.cwd()
@@ -44,7 +43,7 @@ export default class MultiHtmlPlugin {
     let defaultRender = (src, params) => {
       return ejs.renderFile(src, params, { async: true })
     }
-    compiler.hooks.emit.tapPromise('RoutesPlugin', async (compilation: Compilation) => {
+    compiler.hooks.emit.tapPromise(HtmlsPlugin.name, async (compilation: Compilation) => {
       let assets = { ...compilation.assets }
       let files = Object.keys(assets).map(f => {
         if (typeof publicPath === 'function') {
@@ -63,13 +62,13 @@ export default class MultiHtmlPlugin {
             let render = html.render || this.props.render || defaultRender as Render
             let params: Params = { files, jses, csses, options: this.props, compilation }
             let source = await render(src, params)
-            let dist = typeof html.filename === 'string' ? html.filename : html.filename(source, src, params)
+            let filename = typeof html.filename === 'string' ? html.filename : html.filename(source, src, params)
             if (this.props.flushOnDev) {
-              fs.writeFile(pathLib.resolve(outputPath, dist), source, err => {
+              fs.writeFile(pathLib.resolve(outputPath, filename), source, err => {
                 if (err) console.error(err)
               })
             }
-            compilation.assets[dist] = {
+            compilation.assets[filename] = {
               size: () => source.length,
               source: () => source,
             }
@@ -82,5 +81,5 @@ export default class MultiHtmlPlugin {
 }
 
 
-module.exports = MultiHtmlPlugin
-module.exports.default = MultiHtmlPlugin
+module.exports = HtmlsPlugin
+module.exports.default = HtmlsPlugin
