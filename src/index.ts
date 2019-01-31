@@ -18,6 +18,7 @@ export interface Params {
   csses: string[]
   options: Props
   compilation: Compilation
+  [k: string]: any
 }
 
 export type Render = (src: string, params: Params) => string | Promise<string>
@@ -26,6 +27,7 @@ export interface HtmlInfo {
   src: string
   filename: string | ((source: string, src: string, params: Params) => string)
   render?: Render
+  params?: any
 }
 
 export interface Props {
@@ -33,6 +35,7 @@ export interface Props {
   render?: Render
   flushOnDev?: boolean
   publicPath?: string | ((name: string) => string)
+  params?: any
 }
 export default class HtmlsPlugin {
   constructor(public props: Props) {
@@ -60,7 +63,15 @@ export default class HtmlsPlugin {
           async html => {
             let src = pathLib.resolve(process.cwd(), html.src)
             let render = html.render || this.props.render || defaultRender as Render
-            let params: Params = { files, jses, csses, options: this.props, compilation }
+            let params: Params = {
+              files,
+              jses,
+              csses,
+              options: this.props,
+              compilation,
+              ...this.props.params,
+              ...html.params,
+            }
             let source = await render(src, params)
             let filename = typeof html.filename === 'string' ? html.filename : html.filename(source, src, params)
             if (this.props.flushOnDev) {

@@ -7,6 +7,9 @@
   "repository": "https://github.com/zaaack/htmls-webpack-plugin",
   "author": "zaaack",
   "license": "MIT",
+  "scripts": {
+    "test": "foy test"
+  },
   "files": [
     "lib",
     "src/index.ts"

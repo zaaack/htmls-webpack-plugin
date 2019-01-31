@@ -7,5 +7,5 @@ task('build', async ctx => {
 })
 
 task('test', async ctx => {
-  await ctx.exec(`mocha -r ts-node/register -r tsconfig-paths/register ./src/test/**/*.test.ts`)
+  await ctx.exec(`mocha --timeout 100000 -r ts-node/register -r tsconfig-paths/register ./src/test/**/*.test.ts`)
 })
