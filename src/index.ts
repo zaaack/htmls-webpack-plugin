@@ -28,15 +28,21 @@ export interface HtmlInfo {
   filename: string | ((source: string, src: string, params: Params) => string)
   render?: Render
   params?: any
+  flushOnDev?: boolean | string
 }
 
 export interface Props {
   htmls: HtmlInfo[]
   render?: Render
-  flushOnDev?: boolean
+  flushOnDev?: boolean | string
   publicPath?: string | ((name: string) => string)
   params?: any
 }
+
+function defaults<T>(val: T | undefined | null, defaults: T): T {
+  return val == null ? defaults : val
+}
+
 export default class HtmlsPlugin {
   constructor(public props: Props) {
   }
@@ -54,10 +60,13 @@ export default class HtmlsPlugin {
         }
         return publicPath + f
       })
+
       let jses = files.filter(k => k.endsWith('.js'))
       let csses = files.filter(k => k.endsWith('.css'))
+
       console.log('Start building htmls')
       console.time('builded-htmls')
+
       await Promise.all(
         this.props.htmls.map(
           async html => {
@@ -72,13 +81,18 @@ export default class HtmlsPlugin {
               ...this.props.params,
               ...html.params,
             }
+
             let source = await render(src, params)
             let filename = typeof html.filename === 'string' ? html.filename : html.filename(source, src, params)
-            if (this.props.flushOnDev) {
-              fs.writeFile(pathLib.resolve(outputPath, filename), source, err => {
+
+            let flushOnDev = defaults<string | boolean>(defaults(this.props.flushOnDev, html.flushOnDev!) , false)
+            if (flushOnDev) {
+              let outFile = typeof flushOnDev === 'string' ? flushOnDev : pathLib.resolve(outputPath, filename)
+              fs.writeFile(outFile, source, err => {
                 if (err) console.error(err)
               })
             }
+
             compilation.assets[filename] = {
               size: () => source.length,
               source: () => source,

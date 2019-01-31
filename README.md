@@ -28,13 +28,14 @@ module.exports = {
             },
             htmls: [{
                 src: '', // template path
-                filename: '', // string | ((source, src, params) => string), relative to output path, can be a function to generate via context
+                filename: '', // string | ((source, src, params) => string), relative to output path, can be a function to be generated via context
                 render: (file, params) => string | Promise<string>, // override global render function
+                flushOnDev: boolean // or string, override global flushOnDev
                 params: { // custom params when rendering
                     //...
                 }
             }],
-            flushOnDev: false, // flush html files to dist, useful for debug.
+            flushOnDev: false, // boolean | string, flush html files to dist, can be a string file path, useful for debug or devServer.
             publicPath: '', // function | string, override webpackConf's publicPath
             params: {  // custom params when rendering
                 // ...
@@ -54,6 +55,7 @@ interface Params {
   csses: string[] // all files ends with .css
   options: Props // plugin props
   compilation: Compilation // webpack compilation
+  [k: string]: any // custom params via options
 }
 ```
 
