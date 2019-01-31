@@ -8,7 +8,8 @@
   "author": "zaaack",
   "license": "MIT",
   "scripts": {
-    "test": "foy test"
+    "test": "foy test",
+    "preversion": "foy test && foy build && git add -A"
   },
   "files": [
     "lib",
