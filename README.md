@@ -1,5 +1,7 @@
 # htmls-webpack-plugin
 
+[![Build Status](https://travis-ci.org/zaaack/htmls-webpack-plugin.svg?branch=master)](https://travis-ci.org/zaaack/htmls-webpack-plugin) [![npm](https://img.shields.io/npm/v/htmls-webpack-plugin.svg)](https://www.npmjs.com/package/htmls-webpack-plugin) [![npm](https://img.shields.io/npm/dm/htmls-webpack-plugin.svg)](https://www.npmjs.com/package/htmls-webpack-plugin)
+
 Simple, flexible and fast html webpack plugin.
 
 ## Features
