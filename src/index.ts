@@ -85,7 +85,7 @@ export default class HtmlsPlugin {
         ? await params(compilation, compiler as webpack.Compiler)
         : params
       }
-      const propCustomParams = resolveCustomParams(this.props.params)
+      const propCustomParams = await resolveCustomParams(this.props.params)
       await Promise.all(
         this.props.htmls.map(
           async html => {
