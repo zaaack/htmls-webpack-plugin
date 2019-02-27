@@ -25,6 +25,8 @@ const HtmlsWebpackPlugin = require('htmls-webpack-plugin')
 module.exports = {
     plugins: [
         new HtmlsWebpackPlugin({
+            beforeEmit: (compilation, compiler) => void, // hooks
+            afterEmit: (compilation, compiler) => void, // hooks
             render(file, params) { // (src: string, params: Params) => string | Promise<string>, custom template rendering function, support async rendering, default is ejs
                 return ''
             },
@@ -37,9 +39,15 @@ module.exports = {
                     //...
                 }
             }],
-            flushOnDev: false, // boolean | string, flush html files to dist, can be a string file path, useful for debug or devServer.
-            publicPath: '', // function | string, override webpackConf's publicPath
-            params: {  // custom params when rendering
+
+             /* boolean | string, flush html files to dist, can be a string file path, useful for debug or devServer. */
+            flushOnDev: false,
+
+             /* function | string, override webpackConf's publicPath */
+            publicPath: '',
+
+            // () => object | () => Promise<object> | object, custom params when rendering, could be an async function
+            params: {
                 // ...
             }
         })

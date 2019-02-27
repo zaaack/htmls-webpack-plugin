@@ -23,11 +23,20 @@ export interface Params {
 
 export type Render = (src: string, params: Params) => string | Promise<string>
 
+export type GeneralParams = {
+  [k: string]: any
+}
+
+function isCustomParamsFn(g: any): g is CustomParamsFn {
+  return typeof g === 'function'
+}
+export type CustomParamsFn = ((compilation: Compilation, compiler: webpack.Compiler) => GeneralParams | Promise<GeneralParams>)
+export type CustomParams = GeneralParams | CustomParamsFn
 export interface HtmlInfo {
   src: string
   filename: string | ((source: string, src: string, params: Params) => string)
   render?: Render
-  params?: any
+  params?: CustomParams
   flushOnDev?: boolean | string
 }
 
@@ -36,13 +45,14 @@ export interface Props {
   render?: Render
   flushOnDev?: boolean | string
   publicPath?: string | ((name: string) => string)
-  params?: any
+  params?: CustomParams
+  beforeEmit?: (compilation: Compilation, compiler: webpack.Compiler) => void | Promise<void>,
+  afterEmit?: (compilation: Compilation, compiler: webpack.Compiler) => void | Promise<void>,
 }
 
 function defaults<T>(val: T | undefined | null, defaults: T): T {
   return val == null ? defaults : val
 }
-
 export default class HtmlsPlugin {
   constructor(public props: Props) {
   }
@@ -53,6 +63,9 @@ export default class HtmlsPlugin {
       return ejs.renderFile(src, params, { async: true })
     }
     compiler.hooks.emit.tapPromise(HtmlsPlugin.name, async (compilation: Compilation) => {
+      if (this.props.beforeEmit) {
+        await this.props.beforeEmit(compilation, compiler as webpack.Compiler)
+      }
       let assets = { ...compilation.assets }
       let files = Object.keys(assets).map(f => {
         if (typeof publicPath === 'function') {
@@ -67,19 +80,26 @@ export default class HtmlsPlugin {
       console.log('Start building htmls')
       console.time('builded-htmls')
 
+      async function resolveCustomParams(params?: CustomParams): Promise<GeneralParams | undefined> {
+        return isCustomParamsFn(params)
+        ? await params(compilation, compiler as webpack.Compiler)
+        : params
+      }
+      const propCustomParams = resolveCustomParams(this.props.params)
       await Promise.all(
         this.props.htmls.map(
           async html => {
             let src = pathLib.resolve(process.cwd(), html.src)
             let render = html.render || this.props.render || defaultRender as Render
+            let htmlCustomParams = await resolveCustomParams(html.params)
             let params: Params = {
               files,
               jses,
               csses,
               options: this.props,
               compilation,
-              ...this.props.params,
-              ...html.params,
+              ...propCustomParams,
+              ...htmlCustomParams,
             }
 
             let source = await render(src, params)
@@ -101,6 +121,9 @@ export default class HtmlsPlugin {
         )
       )
       console.timeEnd('builded-htmls')
+      if (this.props.afterEmit) {
+        await this.props.afterEmit(compilation, compiler as webpack.Compiler)
+      }
     })
   }
 }
