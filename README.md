@@ -25,31 +25,38 @@ const HtmlsWebpackPlugin = require('htmls-webpack-plugin')
 module.exports = {
     plugins: [
         new HtmlsWebpackPlugin({
-            beforeEmit: (compilation, compiler) => void, // hooks
-            afterEmit: (compilation, compiler) => void, // hooks
-            render(file, params) { // (src: string, params: Params) => string | Promise<string>, custom template rendering function, support async rendering, default is ejs
-                return ''
-            },
+             // optional, hooks
+            beforeEmit: (compilation, compiler) => void,
+             // optional, hooks
+            afterEmit: (compilation, compiler) => void,
+             // optional, default is ejs. custom template rendering function, support async rendering,
+            render: (file, params) => string | Promise<string>,
             htmls: [{
-                src: '', // template path
-                filename: '', // string | ((source, src, params) => string), relative to output path, can be a function to be generated via context
-                render: (file, params) => string | Promise<string>, // override global render function
-                flushOnDev: boolean // or string, override global flushOnDev
-                params: { // custom params when rendering
-                    //...
-                }
+                // template path
+                src: '',
+                // string | ((source, src, params) => string), relative to output path, can be a function to be generated via context
+                filename: '',
+                // optional, override global render function
+                render: (file, params) => string | Promise<string>,
+                // optional, override global flushOnDev
+                flushOnDev: boolean | string
+                // custom params when rendering
+                params: () => object | () => Promise<object> | object
+                // transformParams, override global transformParams
+                transformParams?: (params: Params) => Params & { [k: string]: any }
             }],
 
              /* boolean | string, flush html files to dist, can be a string file path, useful for debug or devServer. */
             flushOnDev: false,
 
-             /* function | string, override webpackConf's publicPath */
-            publicPath: '',
+             /* optional, override webpackConf's publicPath */
+            publicPath: function | string',
 
-            // () => object | () => Promise<object> | object, custom params when rendering, could be an async function
-            params: {
-                // ...
-            }
+            // optional, custom params when rendering, could be an async function
+            params: () => object | () => Promise<object> | object
+
+            // transformParams
+            transformParams?: (params: Params) => Params & { [k: string]: any }
         })
     ]
 }
@@ -60,6 +67,7 @@ The variables in html templates:
 
 ```ts
 interface Params {
+  entries: string[] // all entrypoints
   files: string[] // all files
   jses: string[] // all files ends with .js
   csses: string[] // all files ends with .css
@@ -67,6 +75,16 @@ interface Params {
   compilation: Compilation // webpack compilation
   [k: string]: any // custom params via options
 }
+```
+
+ejs example
+
+```html
+<body>
+    <% for (let js in entries) {%>
+        <script src="<%= js %>"></script>
+    <% } %>
+</body>
 ```
 
 ## Why not html-webpack-plugin

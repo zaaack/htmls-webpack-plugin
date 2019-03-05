@@ -10,9 +10,11 @@ export interface Assets {
 }
 export interface Compilation extends webpack.Compiler {
   assets: Assets
+  entrypoints: Map<string, any>
 }
 
 export interface Params {
+  entries: string[]
   files: string[]
   jses: string[]
   csses: string[]
@@ -38,7 +40,10 @@ export interface HtmlInfo {
   render?: Render
   params?: CustomParams
   flushOnDev?: boolean | string
+  transformParams?: ParamTransformer
 }
+
+export type ParamTransformer = (params: Params) => Params & { [k: string]: any }
 
 export interface Props {
   htmls: HtmlInfo[]
@@ -48,6 +53,7 @@ export interface Props {
   params?: CustomParams
   beforeEmit?: (compilation: Compilation, compiler: webpack.Compiler) => void | Promise<void>,
   afterEmit?: (compilation: Compilation, compiler: webpack.Compiler) => void | Promise<void>,
+  transformParams?: ParamTransformer
 }
 
 function defaults<T>(val: T | undefined | null, defaults: T): T {
@@ -74,8 +80,13 @@ export default class HtmlsPlugin {
         return publicPath + f
       })
 
-      let jses = files.filter(k => k.endsWith('.js'))
+      let jses = files.filter(k => k.endsWith('.js')).reverse()
       let csses = files.filter(k => k.endsWith('.css'))
+
+      let entries: string[] = []
+      for (const [k, v] of compilation.entrypoints) {
+        entries = entries.concat(v.getFiles())
+      }
 
       console.log('Start building htmls')
       console.time('builded-htmls')
@@ -96,12 +107,17 @@ export default class HtmlsPlugin {
               files,
               jses,
               csses,
+              entries,
               options: this.props,
               compilation,
               ...propCustomParams,
               ...htmlCustomParams,
             }
 
+            let transform = this.props.transformParams || html.transformParams
+            if (transform) {
+              params = transform(params)
+            }
             let source = await render(src, params)
             let filename = typeof html.filename === 'string' ? html.filename : html.filename(source, src, params)
 
