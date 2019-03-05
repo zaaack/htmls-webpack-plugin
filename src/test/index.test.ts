@@ -9,12 +9,13 @@ describe('simple', () => {
             entry: p('fixtures/index.js'),
             output: {
                 path: OUTPUT_DIR,
-                filename: 'index_bundle.js'
+                filename: 'index_bundle.js',
+                publicPath: '/static/'
             },
             plugins: [new HtmlsWebpackPlugin({
                 htmls: [{ src: p('./fixtures/index.ejs'),
                 filename: `index.html` }],
             })]
-            }, [/<body>[\s]*<script src="index_bundle.js"><\/script>[\s]*<\/body>/]);
+            }, [/<body>[\s]*<script src="\/static\/index_bundle.js"><\/script>[\s]*<\/body>/]);
     })
 })

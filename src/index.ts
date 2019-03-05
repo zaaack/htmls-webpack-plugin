@@ -68,17 +68,18 @@ export default class HtmlsPlugin {
     let defaultRender = (src, params) => {
       return ejs.renderFile(src, params, { async: true })
     }
+    let toCDN = (f: string) => {
+      if (typeof publicPath === 'function') {
+        publicPath = publicPath(f)
+      }
+      return publicPath + f
+    }
     compiler.hooks.emit.tapPromise(HtmlsPlugin.name, async (compilation: Compilation) => {
       if (this.props.beforeEmit) {
         await this.props.beforeEmit(compilation, compiler as webpack.Compiler)
       }
       let assets = { ...compilation.assets }
-      let files = Object.keys(assets).map(f => {
-        if (typeof publicPath === 'function') {
-          publicPath = publicPath(f)
-        }
-        return publicPath + f
-      })
+      let files = Object.keys(assets).map(toCDN)
 
       let jses = files.filter(k => k.endsWith('.js')).reverse()
       let csses = files.filter(k => k.endsWith('.css'))
@@ -87,6 +88,7 @@ export default class HtmlsPlugin {
       for (const [k, v] of compilation.entrypoints) {
         entries = entries.concat(v.getFiles())
       }
+      entries = entries.map(toCDN)
 
       console.log('Start building htmls')
       console.time('builded-htmls')
