@@ -106,10 +106,10 @@ export default class HtmlsPlugin {
             let render = html.render || this.props.render || defaultRender as Render
             let htmlCustomParams = await resolveCustomParams(html.params)
             let params: Params = {
-              files,
-              jses,
-              csses,
-              entries,
+              files: files.slice(),
+              jses: jses.slice(),
+              csses: csses.slice(),
+              entries: entries.slice(),
               options: this.props,
               compilation,
               ...propCustomParams,
