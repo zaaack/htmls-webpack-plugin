@@ -8,24 +8,27 @@ export function testHtmlPlugin (webpackConfig: any, expectedResults: (string | R
     outputFile = outputFile || 'index.html';
     return new Promise(res => {
         webpack(webpackConfig, (err, stats) => {
+          if (!stats) {
+            throw new Error(`empty stats`)
+          }
           console.error(err)
-            assert.deepEqual(err, null, 'no webpack error')
+            assert.deepStrictEqual(err, null, 'no webpack error')
             const compilationErrors = (stats.compilation.errors || []).join('\n');
             if (expectErrors) {
-              assert.notDeepEqual(compilationErrors, '', 'compilationErrors expectErrors');
+              assert.notDeepStrictEqual(compilationErrors, '', 'compilationErrors expectErrors');
             } else {
-              assert.deepEqual(compilationErrors, '', 'compilationErrors');
+              assert.deepStrictEqual(compilationErrors, '', 'compilationErrors');
             }
             const compilationWarnings = (stats.compilation.warnings || []).join('\n');
             if (expectWarnings) {
-              assert.notDeepEqual(compilationWarnings, '', 'compilationWarnings expectErrors');
+              assert.notDeepStrictEqual(compilationWarnings, '', 'compilationWarnings expectErrors');
             } else {
-              assert.deepEqual(compilationWarnings, '', 'compilationWarnings');
+              assert.deepStrictEqual(compilationWarnings, '', 'compilationWarnings');
             }
             if (outputFile instanceof RegExp) {
               const fileNames = Object.keys(stats.compilation.assets);
               const matches = Object.keys(stats.compilation.assets).filter(item => (outputFile as RegExp).test(item));
-              assert.notDeepEqual(matches[0] || fileNames, fileNames)
+              assert.notDeepStrictEqual(matches[0] || fileNames, fileNames)
               outputFile = matches[0];
             }
             assert.equal(outputFile!.indexOf('[hash]'), -1)
@@ -47,7 +50,7 @@ export function testHtmlPlugin (webpackConfig: any, expectedResults: (string | R
                 assert(htmlContent.includes(expectedResult.replace('%hash%', stats.hash!)));
               }
             }
-            res()
+            res(null)
           });
     })
   }

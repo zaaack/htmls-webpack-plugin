@@ -4,6 +4,8 @@
 
 Simple, flexible and fast html webpack plugin.
 
+> NOTE: v2 support webpack5, if you still using webpack4, please install htmls-webpack-plugin@v1.0.9
+
 ## Features
 
 - Simple and flexisble, you can almost controll anything of generate htmls, no need of setup lots of plugins.
