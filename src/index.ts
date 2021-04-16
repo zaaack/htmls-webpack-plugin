@@ -88,7 +88,7 @@ export default class HtmlsPlugin {
           {
             name: this.constructor.name,
             // https://github.com/webpack/webpack/blob/master/lib/Compilation.js#L3280
-            stage: Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL,
+            stage: Compilation.PROCESS_ASSETS_STAGE_REPORT,
           },
           async () => {
             if (this.props.beforeEmit) {
