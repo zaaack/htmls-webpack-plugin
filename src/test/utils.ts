@@ -31,7 +31,7 @@ export function testHtmlPlugin (webpackConfig: any, expectedResults: (string | R
               assert.notDeepStrictEqual(matches[0] || fileNames, fileNames)
               outputFile = matches[0];
             }
-            assert.equal(outputFile!.indexOf('[hash]'), -1)
+            assert.strictEqual(outputFile!.indexOf('[hash]'), -1)
             const outputFileExists = fs.existsSync(path.join(OUTPUT_DIR, outputFile!));
             assert(outputFileExists);
             if (!outputFileExists) {

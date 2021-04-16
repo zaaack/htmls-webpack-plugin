@@ -82,7 +82,7 @@ export default class HtmlsPlugin {
     }
     compiler.hooks.thisCompilation.tap(
       HtmlsPlugin.name,
-      async (compilation) => {
+      (compilation) => {
         const { sources, Compilation } = require('webpack')
         compilation.hooks.processAssets.tapPromise(
           {
