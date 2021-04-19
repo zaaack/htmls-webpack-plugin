@@ -9,6 +9,7 @@
   "license": "MIT",
   "scripts": {
     "test": "foy test",
+    "build": "foy build",
     "preversion": "foy test && foy build && git add -A"
   },
   "files": [

@@ -68,6 +68,8 @@ function defaults<T>(val: T | undefined | null, defaults: T): T {
 export default class HtmlsPlugin {
   constructor(public props: Props) {}
   apply(compiler: webpack.Compiler) {
+
+    const logger = compiler.getInfrastructureLogger(HtmlsPlugin.name);
     let outputPath = compiler.options.output!.path || process.cwd()
     let publicPath =
       this.props.publicPath || compiler.options.output!.publicPath || ''
@@ -109,8 +111,8 @@ export default class HtmlsPlugin {
             }
             entries = entries.map(toCDN)
 
-            console.log('Start building htmls')
-            console.time('builded-htmls')
+            logger.log('Start building htmls')
+            logger.time('builded-htmls')
 
             async function resolveCustomParams(
               params?: CustomParams
@@ -167,7 +169,7 @@ export default class HtmlsPlugin {
                 compilation.emitAsset(filename, new sources.RawSource(source))
               })
             )
-            console.timeEnd('builded-htmls')
+            logger.timeEnd('builded-htmls')
             if (this.props.afterEmit) {
               await this.props.afterEmit(
                 compilation,
